@@ -1,4 +1,10 @@
-export function GPT(input: string, model: string = "gpt-3.5-turbo"): string {
+export function GPT(input: string, model: string = "gpt-3.5-turbo", useCache: boolean = true): string {
+  const cache = CacheService.getScriptCache();
+  if (useCache && cache.get(input)) {
+    // TODO: キャッシュのキーの文字数制限がある
+    return cache.get(input);
+  }
+
   const URL = "https://api.openai.com/v1/chat/completions";
   const headers = {
     "Content-Type": "application/json",
@@ -6,7 +12,7 @@ export function GPT(input: string, model: string = "gpt-3.5-turbo"): string {
   };
   const body = {
     model,
-    max_tokens: 100,
+    // max_tokens: 100,
     messages: [{ role: "user", content: input }],
   }
   const response = UrlFetchApp.fetch(
@@ -17,5 +23,8 @@ export function GPT(input: string, model: string = "gpt-3.5-turbo"): string {
       payload: JSON.stringify(body)
     }
   );
-  return JSON.parse(response.getContentText()).choices[0].message.content;
+  const result = JSON.parse(response.getContentText()).choices[0].message.content;
+  cache.put(input, result, 21600);
+
+  return result;
 }
