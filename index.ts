@@ -1,8 +1,19 @@
 export function GPT(input: string, model: string = "gpt-3.5-turbo", useCache: boolean = true): string {
   const cache = CacheService.getScriptCache();
-  if (useCache && cache.get(input)) {
-    // TODO: キャッシュのキーの文字数制限がある
-    return cache.get(input);
+
+  if (useCache) {
+    try {
+      const cachedResult = cache.get(input);
+      if (cachedResult) {
+        return cachedResult;
+      }
+    } catch (e) {
+      if (e.message.includes("Argument too large: key")) {
+        throw new Error("キャッシュの取得に失敗しました。入力を短くするか、キャッシュを無効にしてください。");
+      } else {
+        throw e;
+      }
+    }
   }
 
   const URL = "https://api.openai.com/v1/chat/completions";
@@ -24,7 +35,10 @@ export function GPT(input: string, model: string = "gpt-3.5-turbo", useCache: bo
     }
   );
   const result = JSON.parse(response.getContentText()).choices[0].message.content;
-  cache.put(input, result, 21600);
+
+  if (useCache) {
+    cache.put(input, result, 21600);
+  }
 
   return result;
 }
