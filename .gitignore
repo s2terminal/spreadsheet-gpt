@@ -1,0 +1,5 @@
+secrets/*
+.clasp.json
+.clasprc.json
+
+secrets.ts
