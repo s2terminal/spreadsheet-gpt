@@ -1,6 +1,16 @@
+// JSDocの記法の一部がスプレッドシートのオートコンプリートに反映される
+/**
+ * GPTを呼び出すカスタム関数
+ *
+ * @param {string} input GPTへの入力文字列
+ * @param {model} model モデル名。デフォルトは"gpt-3.5-turbo"
+ * @param {boolean} useCache キャッシュを使用するかどうか。長い入力を使う時はキャッシュを無効化する必要がある
+ * @return GPTで生成した結果
+ * @customfunction
+ */
 export function GPT(input: string, model: string = "gpt-3.5-turbo", useCache: boolean = true): string {
+  // キャッシュから取得
   const cache = CacheService.getScriptCache();
-
   if (useCache) {
     try {
       const cachedResult = cache.get(input);
@@ -16,6 +26,7 @@ export function GPT(input: string, model: string = "gpt-3.5-turbo", useCache: bo
     }
   }
 
+  // OpenAI Chat Completion APIで生成
   const URL = "https://api.openai.com/v1/chat/completions";
   const headers = {
     "Content-Type": "application/json",
@@ -29,13 +40,14 @@ export function GPT(input: string, model: string = "gpt-3.5-turbo", useCache: bo
   const response = UrlFetchApp.fetch(
     URL,
     {
-      method: "POST",
+      method: "post",
       headers: headers,
       payload: JSON.stringify(body)
     }
   );
   const result = JSON.parse(response.getContentText()).choices[0].message.content;
 
+  // キャッシュに保存
   if (useCache) {
     cache.put(input, result, 21600);
   }
