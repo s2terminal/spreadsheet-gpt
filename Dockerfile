@@ -8,4 +8,6 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g @google/clasp
+COPY ./package.json ./package-lock.json ./
+
+RUN npm install --dev

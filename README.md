@@ -4,16 +4,15 @@
 
 ```
 $ docker compose run --rm app bash
-# clasp login
+# npx clasp login
 ```
 
 ```
-$ docker compose exec app bash
-# curl localhost:xxxx
+$ docker compose exec app curl localhost:xxxx
 ```
 
 ## Push
 
 ```
-$ docker compose exec app clasp push
+$ docker compose exec app npx clasp push
 ```

@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@google/clasp": "^2.4.2"
+  },
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.80"
+  }
 }
